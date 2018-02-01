@@ -114,3 +114,123 @@ y vemos que el switch las olvida
 Una forma de hacerlos es hacer ping de pc1 a todas las maquinas
 y mirar la tabla de direcciones mac aprendidas en el switch S1
 
++++++++++++++++++++++++++++++++++++++++++++++++
+2.REDES CONECTADAS A TRAVÉS DE SWITCH Y ROUTER
++++++++++++++++++++++++++++++++++++++++++++++++
+
+2.1 COMUNICACIÓN ENTREPC1 Y PC2
+-------------------------------
+
+2.1.1
+
+
+Como vemos en la imagen cuando hacemos ping de pc1 a pc2 
+existe conectividad entre ambos vemos que esa trama tambien 
+le llega a pc3 pero no le llega a pc5
+
+---------------------------
+2.1.2
+
+como podemos observar en el switch ha aprendido dos direcciones mac
+que no son las suyas
+
+En eth0 aprende la direccion ethernet de pc1
+
+En eth1 aprende la direccion  de pc2
+
+podemos comprobarlo con:
+
+brctl showmacs s1 y despues en las maquinas vemos 
+con ifconfig.   
+------------------------------
+2.1.3
+
+En principio llegaran tramas a pc3 por estar enla misma
+subred de pc2 au8nque la descarta por no ir dirigida a 
+el.
+
+comprobamos haciendo capturas en pc4 y en pc5 para ver 
+si llegan tramas
+
+
+Como vemos en la imagen solo llegan tramas a pc2 pc3
+
+---------------------
+2.2 COMUNICACION DE PC1 A PC3
+---------------------
+
+2.2.1
+
+
+Al hacer ping de pc1 a pc3 vemos que nos sale 
+un mensaje de maquina inalcanzable. Ademas comprobamos 
+que la trama no pasa por pc2
+
+
+--------------
+2.2.2
+
+
+En este caso podemos solucionarlo configurando r1 
+metiendo gateways en pc1 y en pc3 y con eso se 
+solucionara.
+
+-------------------
+2.2.3
+
+ Para este caso vamos a configurar :
+
+ pc1 -> gw 13.0.0.15
+
+ pc3 -> gw 11.0.0.5
+
+En r1 tenemos que configurar dos direcciones en eth0 y en eth1
+
+inet eth0
+iface eth0 inet static
+ address 13.0.0.5
+
+...
+
+
+inet eth1
+iface eth1 inet static
+ address 11.0.0.5
+...
+ 
+-------------
+2.2.4
+
+
+Como vemos en la captura que hemos realizado pc3 recibe 
+solicitud arp preguntando por su direccion ip en la 
+siguiente linea manda que respuesta a who-as <dirIP> tell <dirIp pc3> 
+
+
+------------
+2.2.5
+
+Vemos en la captura que aprende 4 direcciones
+
+-------------------------------------
+
+2.3 COMUNICACION ENTRE PC2 Y PC4
+------------------------------------
+
+
+2.3.1
+-----
+
+Como podemos ver al hacer ping de pc2 a pc4 nos dice que
+host unreachable
+
+-----
+2.3.2
+ 
+
+En este caso solo nos hace falta arrancar s2 no nos hace 
+falta una configuracion adicional en otras maquinmas
+
+------
+2.3.3
+
