@@ -1,0 +1,116 @@
+PRACTICA 1
+------------------
+COMUNICIÓN ENTRE MÁQUINAS CON S1(PARTE 1.2)
+------------------
+1.2.2
+
+Al repertir el mismo ping y realizando las capturas
+en las máquinas de pc2 pc3 y pc5 obtendriamos el 
+siguiente camino.
+
+1. Hacemos ping -c 11.0.0.33
+2. La trama con direccion broadcast llega a pc2
+y al switch
+
+3. El switch comprueba la direccion ip origen y 
+la guarda en su tabla y comprueba la ip destino
+como no la tiene guardada entoces copia la trama
+recibida por todas sus bocas menos por aquella por
+la que le ha llegado
+
+4. las tramas viajan al resto de la red pero  seran
+descartadas por el resto de máquinas por no ir dirigidas
+a ellas.
+
+5. al mismo tiempo la respuesta del ping viajará 
+al mismo tiempo directamente a pc1 y al switch
+
+6. este ultimo aprende una nueva direccion de memoria 
+la de pc2, y envia la trama a la direccion que tiene de pc1
+
+----------------------------------------------------
+1.2.3
+
+Comprobamos la cahe de ARP con arp-a
+
+si esta entonces
+
+arp -d 11.0.0.2
+
+------------------------------------------------------
+1.2.4
+
+Volvemos a realizar el ping y comprobamos que 
+efectivamente la solicitud de ping  llega a pc3 
+y a pc5 porque el switch ha realizado copias de la
+trama por todas sus bocas menos por la que le ha llegado
+
+-----------------------------------------
+
+1.2.5
+
+-La solicitud ARP llega a pc3 y a pc5 porque el switch 
+copia la trama por todas sus bocas excepto por aquella por la
+que ha llegado la trama
+
+- No les llega la respuesta de ICMP porque el switch ya conoce 
+la direccion de pc1
+
+-porque pc2 conoce el origen de la trama ICMP que pregunta 
+por su IP
+
+-------------------------------------
+
+1.2.6
+
+Pc1 
+eth0
+
+inet addr:11.0.0.1 Bcast:11.0.0.255 mask:255.255.255.0
+
+Pc2
+eth0
+
+inet addr:11.0.0.2 Bcast:11.0.0.255 mask:255.255.255.0
+
+Pc3
+eth0
+
+inet addr:11.0.0.3 Bcast:11.0.0.255 mask:255.255.255.0
+
+Pc4
+eth0
+
+inet addr: 11.0.0.4 Bcast:111.0.0.255 mask 255.255.255.0
+
+
+Pc5
+eth0
+
+inet addr: 11.0.0.5 Bcast:11.0.0.255 mask 255.255.255.0
+
+Pc6
+eth0
+
+inet addr:11.0.0.6 Bcast:11.0.0.255 mask 255.255.255.0
+
+S1 ??????? preguntar
+
+
+---------------------------------------------
+
+1.2.7
+
+Como podemos observar en la imagen las direcciones
+aprendidas se corresponden con Pc1 y Pc2
+
+Pasados 300 ms volvemos a comprobar las macs
+y vemos que el switch las olvida
+
+
+-----------------------------------------------
+1.2.8
+
+Una forma de hacerlos es hacer ping de pc1 a todas las maquinas
+y mirar la tabla de direcciones mac aprendidas en el switch S1
+
