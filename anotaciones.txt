@@ -229,8 +229,99 @@ host unreachable
  
 
 En este caso solo nos hace falta arrancar s2 no nos hace 
-falta una configuracion adicional en otras maquinmas
+falta una configuracion adicional en otras maquinas
 
 ------
 2.3.3
 
+Comprobamos por un lado que la cache de ARP en los pcs estan vacias con el comando 
+arp -a y en los switches conprobamos sus tablas con brctl showmacs <nombre_swith>
+y vemos que ambos casos sus esta todo vacio.
+
+A continuación realizamos el ping y esperamos que llegue una trama de solicitud de 
+ARP que pc4 desecha por no ir dirigido a el, y podemos verlo en la siguiente imagen
+
+-----
+2.3.4
+
+Comprobamos que direcciones aprende S2 cuando pc1 hace un ping a pc2 y como se ve 
+a continuacion s2 aprende las direcciones de pc1 y pc2, por el puerto eth0
+
+-----
+2.3.5
+
+Los paquetes que pasan por Pc1 seran primero solicitudes de ARP preguntando por Pc4
+a continuación pc1 no contesta a dicha solicitud por no ir dirigida a el, sin
+embargo va a recibir tanto los paquete de pc2 y pc4. Esto se debe a que cuando 
+la trama viaja por la red primero sale de pc2 a el switch y al router, y las 
+respuestas de pc4 pasaran por el switc s2 y pasaran por el router y el switch. Como
+pc1 se encuentra detras de un hub que esta entre el router r1  el switch s1 y el
+switch s1 y s2 le llegaran todos los paquetes dirigidos a pc2 y viceversa.
+-----
+2.3.6
+
+Como vemos en la imagen inferior S1 por un lado aprende las direcciones de pc4 por
+eth0 y la de pc2 por eth1.En el caso de S2 vemos que por eth0 aprende pc2 y por
+eth1 aprende pc4 
+
+
+2.4 COMUNICACION ENTRE PC5 Y PC2
+---------------------------------
+
+2.4.1
+-----
+Comprobamos que al hacer un ping de pc5 a pc2 nos salta el mensaje de máquina 
+inalcanzable
+
+2.4.2
+-----
+
+Para que pueda funcionar correctamente un ping de pc5 a pc2 añadimos gateways
+a las maquinas y configuramos las interfaces de r2
+
+2.4.3
+-----
+
+Para poder relizar un ping de pc5 a pc2 vamos a añadir a pc5 un gateway a
+12.0.0.1, y a pc2 un gateway a 13.0.0.1
+
+y por otro lado vamos a confirar r2 de la siguiente manera:
+
+auto eth0
+iface eth0 inet static 
+	address 13.0.0.1
+	network 13.0.0.0
+	netmask 255.255.255.0
+	broadcast 13.0.0.255
+
+auto eth1
+iface eth1 inet static
+	address 12.0.0.1
+	network 12.0.0.0
+	netmask 255.255.255.0
+	broadcast 12.0.0.255 
+
+2.4.4
+-----
+
+Realizamos una captuta en pc3 para saber que paquetes pasaran por el, a primera
+vista por estar en la misma subred que pc2 lellegan todos los paquetes aunque 
+los descartara por no ir dirigidos a el.
+
+<IMG>
+
+Como observamos en la captura efectivamente se ven todos los paquetes intercambiados
+entre pc5 y pc2 ya que tanto pc3 como pc3 estan conectados al mismo hub
+
+2.4.5
+-----
+
+A través del comando brctl showmacs vemos que en el caso de s1 aprende las
+direcciones de pc5 por eth0 por eth1 aprende la de pc2 y r2 y en eth0 la de pc5
+
+En el caso de s2 por eth1 aprende la de pc5 y r2 y por eth0 aprende pc2.
+
+2.4.6
+-----
+No responde porque el que responde es el router r2, por eso la siguiente
+peticion de ARP esta dirigida a la dirección 13.0.0.1
