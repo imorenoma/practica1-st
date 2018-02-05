@@ -1,0 +1,18 @@
+4. IP ALIASING
+----------------------
+
+
+4.1
+----
+
+Configuramos en Pc2 gateway 13.0.0.2
+Configuramos en R2 -> if config eth1:0 13.0.0.2 netmask 255.255.255.0
+Configuramos el retorno del ping en r1 de la forma --> 
+	ifconfig eth1:1 13.0.0.1 netmask 255.255.255.255.0
+
+y con esto podemos hacer ping de pc2 a pc3
+
+
+4.2
+---
+
