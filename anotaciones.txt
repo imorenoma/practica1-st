@@ -325,3 +325,42 @@ En el caso de s2 por eth1 aprende la de pc5 y r2 y por eth0 aprende pc2.
 -----
 No responde porque el que responde es el router r2, por eso la siguiente
 peticion de ARP esta dirigida a la dirección 13.0.0.1
+
+
+---------------------------------------
+3.PROXI ARP
+---------------------------------------
+
+3.1
+---
+
+Para activar proxi arp haremos loo siguiente en r1:
+
+Pc1 --> Pc2
+
+1) echo 1> /proc/sys/net/ipv4/conf/eth0/proxy_arp
+2) arp -i eth0 -Ds 12.0.0.20 eth0 netmask 255.255.255.0
+3) route add -host 12.0.0.20 dev eth1
+
+
+Pc2 --> Pc1
+
+1) echo 1> /proc/sys/net/ipv4/conf/eth1/proxy_arp
+2)arp -i eth1 -Ds 12.0.0.10 eth1 netmask 255.255.255.0
+
+
+*para este ultimo caso no es necesario hacer route add -host.
+
+En nuestro caso hemos configurado las interfaces del router r1 para que pueda haber intercambio 
+entre Pc1 <-> Pc2, y hemos agregado una ruta especifica para Pc2 en la interfaz eth1
+
+3.2
+---
+
+
+
+
+
+3.3
+---
+veremos como las direcciones IP en la cache de ARP tiene la misma direccion ethernet.
