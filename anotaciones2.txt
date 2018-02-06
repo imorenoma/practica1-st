@@ -195,8 +195,95 @@ En este caso las maquinas que se pueden comunicar en esta vlan son pc4 y pc3 a t
 5.2.2
 -----
 
-La solicitd la podemos encontrar en s1 y en s2ademas de pc3
+La solicitd la podemos encontrar en los extremos es decir en este caso en pc3 podemos verlo en la 
+siguiente captura
+
 
 5.2.3
 -----
 
+
+5.2.4
+------
+
+5.2.5
+-----
+Como ocurria en el caso anterior tampoco llega el ping de pc1 a pc4 pero en este caso se 
+debe a que ambas masquinas pertenecen a vlans distintas.
+
+5.2.6
+-----
+En este caso lo unoico que podemos ver es la configuracion del switch virtual ya que hemos asignado 
+sus direcciones ethernet a cada una de las vlans
+
+
+
+5.3 Configuracion de vlan 300
+-------------------------------
+
+S1
+
+vconfig add eth3 300
+ifconfig eth3.300 up
+brctl addbr vs300
+brctl addif vs300 eth1
+brctl addif vs300 eth3.300
+ifconfig vs300 up
+
+s2
+
+vconfig add eth0 300
+vconfig add eth1 300
+ifconfig eth0.300 up
+ifconfig eth1.300 up
+brctl addbr vs300
+brctl addif vs300 eth0.300
+brctl addif vs300 eth1.300
+ifconfig vs300 up
+
+s3
+
+vconfig add eth0 300
+ifconfig eth0.300 up
+brctl addbr vs300
+brctl addif vs300 eth0.300
+brctl addif vs300 eth2
+brctl addif vs300 eth3
+ifconfig vs300 up
+
+
+5.3.1
+-----
+
+Tal y como esta configurada vlan 300 pc5 tiene conexion con pc6 y con el router r1
+
+5.3.2
+-----
+
+Como podemos ver al hacer el ping de pc6 a pc1 tenemos conexion esto se debe a que el router
+es es que esta estableciendo esa conexion.
+
+Más en concreto por una razon. Los paquetes que manda pc6 llegan al router, estos paquetes ya no tienen
+la etiqueta de la vlan por lo que el router interpreta que van dirigidos a la direccion 11.0.0.101
+consulta su tabla y ve que tiene ruta, lo manda por su eth0 a s2. s2 etiquetara los paquetes que le
+llegan por su eth2 con la Vlan 100 de ahi pasa a s1 que lo manda a pc1. Con la respuesta ocurre lo
+mismo.
+
+5.3.3
+-----
+En este caso no hay ningun tipo de problema el ping se realiza correctamente
+y unicamente viaja hacia pc5
+
+
+5.3.4
+-----
+
+Comprobamos con arp -a que la cache de arp esta vacia en pc6 y procedemos a hacer
+el ping.
+
+Las tramas arp apareceran 
+
+
+5.3.5
+
+Comprobamos las tramas en las capturas
