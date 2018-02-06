@@ -8,12 +8,11 @@
 Configuramos en Pc2 gateway 13.0.0.2
 Configuramos en R2 -> 
 	ifconfig eth1:0 13.0.0.2 netmask 255.255.255.0
-	ifconfig eth0:1 13.0.0.3 netmask 255.255.255.0
+	
+Por ultimo añadimos en pc3 una ruta a la red con
 
-Configuramos el retorno del ping en r1 de la forma --> 
-	ifconfig eth1:1 13.0.0.4 netmask 255.255.255.255.0
 
-y con esto podemos hacer ping de pc2 a pc3
+up route add -host 13.0.0.20 gw 11.0.0.2
 
 
 4.2
@@ -22,6 +21,7 @@ y con esto podemos hacer ping de pc2 a pc3
 
 4.3
 ---
+Comprobamos haciendo ping de pc1 a pc5 que no hay retorno de ping pero si llega a pc5
 
 
 4.4
