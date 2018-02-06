@@ -163,3 +163,40 @@ No tienen forma de saber que estan usando Vlans para comunicarse
 
 Pues como aparece en la captura de pantalla el ping no llega a pc4 a pesar de estar
 en la misma subred porque no pertenece a vlan 100
+
+
+5.2 Configuracion Vlan 200
+-----------------------------
+
+s1
+
+vconfig add eth3 200
+ifconfig eth3.200 up
+brctl addbr vs200
+brctl addif vs200 eth3.200
+brctl addif vs200 eth2
+ifconfig vs200
+
+s2
+
+vconfig add eth0 200 
+ifconfig eth0.200 up
+brctl addbr vs200 
+brctl addif vs200 eth0.200
+brctl addif vs200 eth3
+ifconfig vs200 up
+
+
+5.2.1
+-----
+
+En este caso las maquinas que se pueden comunicar en esta vlan son pc4 y pc3 a traves de s1 y s2
+
+5.2.2
+-----
+
+La solicitd la podemos encontrar en s1 y en s2ademas de pc3
+
+5.2.3
+-----
+
