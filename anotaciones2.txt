@@ -36,7 +36,7 @@ Comprobamos haciendo ping de pc1 a pc5 que no hay retorno de ping pero si llega 
 ---------------------------------
 5.VLANS
 ---------------------------------
-5.1
+1
 ---
 
 Para ahorar tiempo y ver la conectividad entre pcs lo que hacemos es desde pc1
@@ -46,7 +46,7 @@ comprobado que efectivamente tiene conexion con todas las redes.
 Hacemos los mismo con un pc de cada una de las redes y obtenemos como resultado
 que todas las maquinas tienen conexion con todas las máquinas
 
-5.2
+2
 ---
 
 Comprobamos que la cache de ARP de pc1 esta vacia con arp -a. Como vemos la 
@@ -54,4 +54,112 @@ cache esta vacia.
 
 A continuacion realizamos las capturas en s1 s2 s3 y r1. También haremos captura
 en pc2 para ver que llega el ping(aunque se ha comprobado en el apartado
-anterior y hemos vosto que si hay conexion).
+anterior y hemos visto que hay conexion).
+
+
+Como vemos en la imagen superior todos reciben las tamas mandadas por pc1. En el
+caso de r1 vemos que le llega la solicitud pero la descarta
+
+5.1 Configuracion de Vlan100
+-----------------------------
+
+primero borramos la configuracion de los switch:
+
+ifconfig s1 down
+brctl del s1
+
+ifconfig s2 down
+brctl del s2
+
+ifconfig s3 down
+brctl del s3
+
+S1
+
+vconfig add eth3 100
+ifconfig eth3.100 up
+brctl addbr vs100
+brctl addif vs100 eth0
+brctl addif vs100 eth3.100
+ifconfig vs100 up
+
+s2
+
+vconfig  add eth0 100
+vconfig  add eth1 100
+ifconfig eth0.100 up
+ifconfig eth1.100 up
+brctl addbr vs100
+brctl addif vs100 eth0.100
+brctl addif vs100 eth1.100
+brctl addif vs100 eth2
+ifconfig vs100 up
+
+s3
+
+vconfig add eth0 100
+ifconfig eth0.100 up
+brctl addbr vs100
+brctl addif vs100 eth0.100
+brctl addif vs100 eth1
+ifconfig vs100 up
+
+
+5.1.1
+-----
+Una vez configurada la vlan 100 solo se comunicaran maquinas que pertenezcana esta, en este caso
+se comunicaran pc1 con pc2, aunque también esta incluido r1 en esta vlan.
+
+5.1.2
+-----
+Se puede encontrar en s1 s2 s3 y r1 que son los dispositivos pertenecientesa esta vlan. Comprobamos
+haciendo una captura de trafico en estos dispositivos.
+
+ 
+5.1.3
+-----
+
+Para comprobar que ocurre cuando se hace ping de pc1 a pc2 hemos realizado una captura en s2 y
+en pc2. Podemos observar como a s2 le llegan las tramas con la etiqueta de vlan100 dirigidas a
+pc2.
+
+Tambien podemos hacer una captura o bien en s1 como a s3 por ser frontera y asi poder ver que ocurre
+con estas etiquetas.
+
+como vemos este switch al ser frontera de pc2 por un lado le llega la trama con la etiqueta vlan 100, 
+a continuacion este switch se encarga de quitar la etiqueta de vlan y entrega las tramas a pc2. Por
+tanto pc2 recibe las tramas sin la etiqueta de vlan. La respuesta de pc2 se manda a traves de s3
+quien se encargara de volver a poner la etiqueta de la vlan. 
+
+	Este mismo proceso osurre con el switch s1, cuando le llegan tramas a pc1 s1 le quita las
+etiquetas y si pc1 envia tramas pone las etiquetas
+
+
+5.1.4
+-----
+
+
+
+
+5.1.5
+-----
+
+El switch que introduce la etiqueta a la ida es S1, y la respuesta al ping s3 es el encargado
+de poner la etiqueta
+
+5.1.6
+-----
+
+la etiqueta se elimina en s3 de la solicitud y en s1 se quita la etiqueta a la respuesta
+
+5.1.7
+-----
+
+No tienen forma de saber que estan usando Vlans para comunicarse
+
+5.1.8
+-----
+
+
+Pues como aparece en la captura de pantalla el ping no llega a pc4 a pesar de estar
+en la misma subred porque no pertenece a vlan 100
